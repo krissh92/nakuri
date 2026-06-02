@@ -7,6 +7,8 @@ pipeline {
         PYTHON_SCRIPT = 'naukri_profile_updater.py'
         LOG_FILE = 'naukri_update.log'
         UPDATE_LOG = 'naukri_update_log.json'
+        // Detect Python path - modify if your path is different
+        PYTHON_PATH = 'C:\\Program Files\\Python311\\python.exe'
     }
     
     triggers {
@@ -34,13 +36,31 @@ pipeline {
             }
         }
         
+        stage('Verify Python') {
+            steps {
+                echo "Verifying Python installation..."
+                bat '''
+                    echo Checking Python at path...
+                    if exist "%PYTHON_PATH%" (
+                        echo Python found at: %PYTHON_PATH%
+                        "%PYTHON_PATH%" --version
+                    ) else (
+                        echo ERROR: Python not found at %PYTHON_PATH%
+                        echo Searching for Python...
+                        where python || echo Python not in PATH
+                        exit /b 1
+                    )
+                '''
+            }
+        }
+        
         stage('Install Dependencies') {
             steps {
                 echo "Installing Python dependencies..."
                 bat '''
-                    python --version
-                    python -m pip install --upgrade pip
-                    python -m pip install -r requirements.txt
+                    echo Installing packages...
+                    "%PYTHON_PATH%" -m pip install --upgrade pip
+                    "%PYTHON_PATH%" -m pip install -r requirements.txt
                 '''
             }
         }
@@ -55,7 +75,7 @@ pipeline {
                     bat '''
                         set NAUKRI_EMAIL=%NAUKRI_EMAIL%
                         set NAUKRI_PASSWORD=%NAUKRI_PASSWORD%
-                        python %PYTHON_SCRIPT%
+                        "%PYTHON_PATH%" %PYTHON_SCRIPT%
                     '''
                 }
             }
