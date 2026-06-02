@@ -37,7 +37,11 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 echo "Installing Python dependencies..."
-                bat 'pip install -r requirements.txt'
+                bat '''
+                    python --version
+                    python -m pip install --upgrade pip
+                    python -m pip install -r requirements.txt
+                '''
             }
         }
         
@@ -68,7 +72,7 @@ pipeline {
                     git push origin %BRANCH% || echo Push failed, skipping
                 '''
             }
-        } 
+        }
     }
     
     post {
