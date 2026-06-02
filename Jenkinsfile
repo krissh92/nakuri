@@ -130,7 +130,7 @@ pipeline {
                         Failed to update Naukri profile.
                         Check logs: ${BUILD_URL}console
                     """,
-                    to: '${CHANGE_AUTHOR_EMAIL}'
+                    to: '${CHANGE_AUTHOR_EMAIL}' 
                 ) || true
             }
         }
