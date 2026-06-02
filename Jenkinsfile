@@ -6,7 +6,7 @@ pipeline {
     
     // Environment variables
     environment {
-        REPO_URL = 'https://github.com/your-username/naukri-profile-updater'
+        REPO_URL = 'https://github.com/krissh92/nakuri.git'
         BRANCH = 'main'
         PYTHON_SCRIPT = 'naukri_profile_updater.py'
         LOG_FILE = 'naukri_update.log'
