@@ -1,0 +1,85 @@
+pipeline {
+    agent any
+    
+    environment {
+        REPO_URL = 'https://github.com/krissh92/nakuri'
+        BRANCH = 'main'
+        PYTHON_SCRIPT = 'naukri_profile_updater.py'
+        LOG_FILE = 'naukri_update.log'
+        UPDATE_LOG = 'naukri_update_log.json'
+    }
+    
+    triggers {
+        cron('0 6 * * *')
+    }
+    
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '30'))
+        timeout(time: 15, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo "Checking out from GitHub..."
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: "${REPO_URL}.git",
+                        credentialsId: 'github-credentials'
+                    ]]
+                ])
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                echo "Installing Python dependencies..."
+                bat 'pip install -r requirements.txt'
+            }
+        }
+        
+        stage('Update Naukri Profile') {
+            steps {
+                echo "Running Naukri profile update..."
+                withCredentials([
+                    string(credentialsId: 'naukri-email', variable: 'NAUKRI_EMAIL'),
+                    string(credentialsId: 'naukri-password', variable: 'NAUKRI_PASSWORD')
+                ]) {
+                    bat '''
+                        set NAUKRI_EMAIL=%NAUKRI_EMAIL%
+                        set NAUKRI_PASSWORD=%NAUKRI_PASSWORD%
+                        python %PYTHON_SCRIPT%
+                    '''
+                }
+            }
+        }
+        
+        stage('Push to GitHub') {
+            steps {
+                echo "Pushing changes to GitHub..."
+                bat '''
+                    git config user.name "Jenkins Bot"
+                    git config user.email "jenkins@noreply.local"
+                    git add %UPDATE_LOG% %LOG_FILE% 2>nul || echo No log files to add
+                    git commit -m "Automated Naukri profile update" || echo No changes to commit
+                    git push origin %BRANCH% || echo Push failed, skipping
+                '''
+            }
+        } 
+    }
+    
+    post {
+        always {
+            archiveArtifacts artifacts: '${LOG_FILE},${UPDATE_LOG}', allowEmptyArchive: true
+        }
+        success {
+            echo "✓ Build successful! Naukri profile updated."
+        }
+        failure {
+            echo "✗ Build failed! Check logs above."
+        }
+    }
+}
