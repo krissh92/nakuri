@@ -78,8 +78,8 @@ pipeline {
                 script {
                     echo "Committing update log to GitHub..."
                     sh '''
-                        git config user.name "Jenkins Bot"
-                        git config user.email "jenkins@example.com"
+                        git config user.name "krrish"
+                        git config user.email "nkdeepak2991@gmail.com"
                         git add ${UPDATE_LOG} ${LOG_FILE} || true
                         
                         # Only commit if there are changes
