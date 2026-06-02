@@ -7,8 +7,7 @@ pipeline {
         PYTHON_SCRIPT = 'naukri_profile_updater.py'
         LOG_FILE = 'naukri_update.log'
         UPDATE_LOG = 'naukri_update_log.json'
-        // Detect Python path - modify if your path is different
-        PYTHON_PATH = 'C:\\Program Files\\Python311\\python.exe'
+        PYTHON_PATH = 'C:\\Users\\deepa\\AppData\\Local\\Programs\\Python\\Python313\\python.exe'
     }
     
     triggers {
@@ -40,16 +39,8 @@ pipeline {
             steps {
                 echo "Verifying Python installation..."
                 bat '''
-                    echo Checking Python at path...
-                    if exist "%PYTHON_PATH%" (
-                        echo Python found at: %PYTHON_PATH%
-                        "%PYTHON_PATH%" --version
-                    ) else (
-                        echo ERROR: Python not found at %PYTHON_PATH%
-                        echo Searching for Python...
-                        where python || echo Python not in PATH
-                        exit /b 1
-                    )
+                    echo Python path: %PYTHON_PATH%
+                    "%PYTHON_PATH%" --version
                 '''
             }
         }
@@ -58,7 +49,6 @@ pipeline {
             steps {
                 echo "Installing Python dependencies..."
                 bat '''
-                    echo Installing packages...
                     "%PYTHON_PATH%" -m pip install --upgrade pip
                     "%PYTHON_PATH%" -m pip install -r requirements.txt
                 '''
@@ -100,10 +90,10 @@ pipeline {
             archiveArtifacts artifacts: '${LOG_FILE},${UPDATE_LOG}', allowEmptyArchive: true
         }
         success {
-            echo "✓ Build successful! Naukri profile updated."
+            echo " Build successful! Naukri profile updated."
         }
         failure {
-            echo "✗ Build failed! Check logs above."
+            echo " Build failed! Check logs above."
         }
     }
 }
