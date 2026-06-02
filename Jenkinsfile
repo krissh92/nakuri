@@ -60,8 +60,8 @@ pipeline {
                 script {
                     echo "Updating Naukri profile at 6 AM..."
                     withCredentials([
-                        string(credentialsId: 'naukri-email', variable: 'NAUKRI_EMAIL'),
-                        string(credentialsId: 'naukri-password', variable: 'NAUKRI_PASSWORD')
+                        string(credentialsId: 'nkdeepak2991@gmail.com', variable: 'NAUKRI_EMAIL'),
+                        string(credentialsId: 'Vishnu@9010728', variable: 'NAUKRI_PASSWORD')
                     ]) {
                         sh '''
                             export NAUKRI_EMAIL=${NAUKRI_EMAIL}
