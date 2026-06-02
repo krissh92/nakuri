@@ -59,8 +59,8 @@ pipeline {
             steps {
                 echo "Running Naukri profile update..."
                 withCredentials([
-                    string(credentialsId: 'nkdeepak2991@gmail.com', variable: 'NAUKRI_EMAIL'),
-                    string(credentialsId: 'Vishnu@9010728', variable: 'NAUKRI_PASSWORD')
+                    string(credentialsId: 'NAUKRI_EMAIL', variable: 'NAUKRI_EMAIL'),
+                    string(credentialsId: 'NAUKRI_PASSWORD', variable: 'NAUKRI_PASSWORD')
                 ]) {
                     bat '''
                         set NAUKRI_EMAIL=%NAUKRI_EMAIL%
